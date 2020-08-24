@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="pin-generator half-width">
+                    <input id="input-pin" class="form-control text-center" type="text">
+                    <button id="btn-click" class="generate-btn">Generate Pin</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-section half-width">
+                    <input class="form-control" type="text">
+                    <div class="numbers">
+                        <div class="calc-body">
+                            <div class="calc-button-row">
+                              <div class="button">7</div>
+                              <div class="button">8</div>
+                              <div class="button">9</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button">4</div>
+                              <div class="button">5</div>
+                              <div class="button">6</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button">1</div>
+                              <div class="button">2</div>
+                              <div class="button">3</div>
+                            </div>
+                            <div class="calc-button-row">
+                                <div class="button"><</div>
+                                <div class="button">0</div>
+                                <div class="button">C</div>
+                            </div>
+                            <div>
+                                <button type="submit" class="submit-btn">Submit</button>
+                                <p class="action-left">3 try left</p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="notify-section">
+            <p class="notify notify-failed">❌ Pin Didn't Match, Please try again</p>
+            <p class="notify notify-success">✅ Pin Matched... Secret door is opening for you</p>
+        </div>
+    </div>
+    <script>
+       // random number show in the input box 
+const showRandomNumber = document.querySelector(".pin-generator .form-control");
+const generatorBtn = document.querySelector(".generate-btn");
+
+let randomNumber = null;
+
+generatorBtn.addEventListener('click', () => {
+    let random = Math.random() * 9000 + 1000;
+    showRandomNumber.value = parseInt(random);
+    randomNumber = parseInt(random);
+
+})
+
+//value and show in box 
+const showCalcValue = document.querySelector('.input-section .form-control');
+const calcParentBody = document.querySelector(".calc-body");
+
+let submitNumber;
+let formValue = '';
+let newCount = 0;
+calcParentBody.addEventListener('click', (event) => {
+
+    if (event.target.className == "button") {
+        let targetValue = event.target.innerText;
+
+        if (targetValue == 'C') {
+            showCalcValue.value = ''
+        } else if (targetValue == '<') {
+            showCalcValue.value = formValue.substring(0, formValue.length- (++newCount));
+        } else {
+            showCalcValue.value += parseInt(targetValue);
+            submitNumber = parseInt(showCalcValue.value);
+            formValue = showCalcValue.value;
+        }
+
+    }
+})
+
+
+
+//check between generator number and submitted number is match true and false and some action
+const submitBtn = document.querySelector(".submit-btn");
+const notifySuccess = document.querySelector('.notify-success ');
+const notifyFailed = document.querySelector('.notify-failed');
+const tryAction = document.querySelector('.action-left');
+
+let tryCount = 3;
+
+
+tryAction.innerText = `${tryCount} try left`;
+tryAction.style.display = 'none';
+
+
+submitBtn.addEventListener("click", () => {
+
+    if (randomNumber === submitNumber) {
+        tryCount = 3;  // Try Action 
+        tryAction.style.display = 'none';
+
+        notifySuccess.style.display = "block"; // notify is success 
+        setTimeout(() => {
+            notifySuccess.style.display = "none"; // after 2s  display none notify success
+        }, 2000);
+
+        // form value empty 
+        showRandomNumber.value = '';
+        showCalcValue.value = '';
+    } else {
+        --tryCount;    // Try Action 
+        
+        if (tryCount <= 0) {
+            submitBtn.classList.add('btn-disabled');
+            submitBtn.disabled = true;
+            tryAction.style.display = 'none';
+        } else {
+            tryAction.innerText = `${tryCount} try left`;
+            tryAction.style.display = 'block';
+        }
+
+        // notify is failed
+        notifyFailed.style.display = "block";
+        setTimeout(() => {
+            notifyFailed.style.display = "none"; // after 2s  display none notify failed 
+        }, 2000);
+
+    }
+
+})
+    </script>
+</body>
+</html>
